@@ -15,7 +15,7 @@ builder.Services.AddRepositories(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.Your startup project 'App.API' doesn't reference Microsoft.EntityFrameworkCore.Design. This package is required for the Entity Framework Core Tools to work. Ensure your startup project is correct, install the package, and try again.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
