@@ -10,24 +10,21 @@ namespace App.API.Controllers;
 public class CustomBaseController : ControllerBase
 {
     [NonAction]
-    public IActionResult CreateActionResult<T> (ServiceResult<T> result)
+    public IActionResult CreateActionResult<T>(ServiceResult<T> result) =>
+    result.Status switch
     {
-        if (result.Status == HttpStatusCode.NoContent)
-        {
-            return new ObjectResult(null) {StatusCode = result.Status.GetHashCode()};
-        }
+        HttpStatusCode.NoContent => NoContent(),
+        HttpStatusCode.Created => Created(result.UrlAsCreated, result.Data),
+        _ => new ObjectResult(result) { StatusCode = (int)result.Status }
+    };
 
-        return new ObjectResult(result) {StatusCode = result.Status.GetHashCode() };
-    }
 
     [NonAction]
-    public IActionResult CreateActionResult(ServiceResult result)
+    public IActionResult CreateActionResult(ServiceResult result) =>
+    result.Status switch
     {
-        if (result.Status == HttpStatusCode.NoContent)
-        {
-            return new ObjectResult(null) { StatusCode = result.Status.GetHashCode() };
-        }
+        HttpStatusCode.NoContent => new ObjectResult(null) { StatusCode = (int)result.Status },
+        _ => new ObjectResult(result) { StatusCode = (int)result.Status }
+    };
 
-        return new ObjectResult(result) { StatusCode = result.Status.GetHashCode() };
-    }
 }

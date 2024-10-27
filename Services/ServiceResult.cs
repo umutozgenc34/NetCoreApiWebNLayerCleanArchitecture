@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Services;
 
@@ -8,9 +9,10 @@ public class ServiceResult<T>
 {
     public T? Data { get; set; }
     public List<string>? ErrorMessage { get; set; }
-    public HttpStatusCode Status { get; set; }
-    public bool IsSuccess =>  ErrorMessage == null || ErrorMessage.Count == 0;
-    public bool IsFail => !IsSuccess;
+    [JsonIgnore] public HttpStatusCode Status { get; set; }
+    [JsonIgnore] public bool IsSuccess =>  ErrorMessage == null || ErrorMessage.Count == 0;
+    [JsonIgnore] public bool IsFail => !IsSuccess;
+    [JsonIgnore] public string? UrlAsCreated { get; set; }
 
     // static factory method
     public static ServiceResult<T> Success(T data , HttpStatusCode status=HttpStatusCode.OK)
@@ -19,6 +21,16 @@ public class ServiceResult<T>
         {
             Data = data,
             Status = status
+        };
+    }
+
+    public static ServiceResult<T> SuccessAsCreated(T data,string urlAsCreated)
+    {
+        return new ServiceResult<T>()
+        {
+            Data = data,
+            Status = HttpStatusCode.Created,
+            UrlAsCreated = urlAsCreated
         };
     }
 
@@ -47,9 +59,9 @@ public class ServiceResult
 {
     
     public List<string>? ErrorMessage { get; set; }
-    public HttpStatusCode Status { get; set; }
-    public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
-    public bool IsFail => !IsSuccess;
+    [JsonIgnore] public HttpStatusCode Status { get; set; }
+    [JsonIgnore] public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
+    [JsonIgnore] public bool IsFail => !IsSuccess;
 
     // static factory method
     public static ServiceResult Success(HttpStatusCode status = HttpStatusCode.OK)
