@@ -8,6 +8,7 @@ using Services.Products;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using System.Reflection;
+using Services.ExceptionHandlers;
 
 namespace Services.Extensions;
 
@@ -18,6 +19,10 @@ public static class ServiceExtensions
         services.AddScoped<IProductService, ProductService>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        services.AddExceptionHandler<CriticalExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
         return services;
     }
 

@@ -1,4 +1,6 @@
 ﻿using Repositories.Products;
+using Services.Products.Create;
+using Services.Products.Update;
 
 namespace Services.Products;
 

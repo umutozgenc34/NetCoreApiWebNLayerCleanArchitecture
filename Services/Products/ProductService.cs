@@ -1,19 +1,23 @@
 ﻿
 
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Products;
+using Services.Products.Create;
+using Services.Products.Update;
 using System.Net;
 
 namespace Services.Products;
 
-public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) : IProductService
+public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork , IMapper mapper) : IProductService
 {
 
     public async Task<ServiceResult<List<ProductDto>>> GetAllListAsync()
     {
         var products = await productRepository.GetAll().ToListAsync();
-        var productAsDto = products.Select(x => new ProductDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        //var productAsDto = products.Select(x => new ProductDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        var productAsDto = mapper.Map<List<ProductDto>>(products);
         return  ServiceResult<List<ProductDto>>.Success(productAsDto);
         
     }
@@ -24,8 +28,8 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         // 2-10 => 11- 20 kayıt Skip(10).Take(10)
         // 3-10 => 21-30 kayıt Skip (20).Take(10)
 
-        var products = await productRepository.GetAll().Skip((pageNumber-1)*pageSize).Take(pageSize).ToListAsync();  
-        var productAsDto = products.Select(x => new ProductDto (x.Id,x.Name,x.Price,x.Stock)).ToList();
+        var products = await productRepository.GetAll().Skip((pageNumber-1)*pageSize).Take(pageSize).ToListAsync();
+        var productAsDto = mapper.Map<List<ProductDto>>(products);
         return ServiceResult<List<ProductDto>>.Success(productAsDto);
     }
 
@@ -47,10 +51,10 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
 
         if (product is null)
         {
-            ServiceResult<ProductDto>.Fail("Product not found " ,HttpStatusCode.NotFound);
+            return ServiceResult<ProductDto?>.Fail("Product not found " ,HttpStatusCode.NotFound);
         }
 
-        var productAsDto = new ProductDto(product!.Id,product.Name, product.Price, product.Stock);
+        var productAsDto = mapper.Map<ProductDto>(product);
 
         return ServiceResult<ProductDto>.Success(productAsDto)!;
     }

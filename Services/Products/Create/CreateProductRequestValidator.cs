@@ -3,7 +3,7 @@
 using FluentValidation;
 using Repositories.Products;
 
-namespace Services.Products;
+namespace Services.Products.Create;
 
 public class CreateProductRequestValidator : AbstractValidator<CreateProductRequest>
 {
@@ -14,7 +14,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Ürün ismi gereklidir")
             .Length(3, 25).WithMessage("Ürün ismi 3 ile 25 karakter arasında olmalıdır");
-            //.Must(MustUniqueProductName).WithMessage("Ürün ismi veritabanında bulunmaktadır");
+        //.Must(MustUniqueProductName).WithMessage("Ürün ismi veritabanında bulunmaktadır");
 
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("Ürünün fiyatı 0 dan büyük olmalıdır");
@@ -23,7 +23,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
             .InclusiveBetween(1, 100).WithMessage("Stok adedi 1 ile 100 arasında olmalıdır");
     }
 
-   
+
 
     //1. Yol sync validation
     //private bool MustUniqueProductName(string name)
