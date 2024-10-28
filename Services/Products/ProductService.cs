@@ -6,6 +6,7 @@ using Repositories;
 using Repositories.Products;
 using Services.Products.Create;
 using Services.Products.Update;
+using Services.Products.UpdateStock;
 using System.Net;
 
 namespace Services.Products;
@@ -37,7 +38,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     {
         var products = await productRepository.GetTopPriceProductAsync(count);
 
-        var productAsDto = products.Select(x => new ProductDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+        var productAsDto = mapper.Map<List<ProductDto>>(products);
 
         return new ServiceResult<List<ProductDto>>()
         {
@@ -68,12 +69,8 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         }
 
 
-        var product = new Product()
-        {
-            Name = request.Name,
-            Price = request.Price,
-            Stock = request.Stock
-        };
+        var product = mapper.Map<Product>(request);
+        
 
         await productRepository.AddAsync(product);
         await unitOfWork.SaveChangesAsync();
@@ -93,9 +90,13 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             return ServiceResult.Fail("Product Not Found",HttpStatusCode.NotFound);
         }
 
-        product.Name = request.Name;
-        product.Price = request.Price;
-        product.Stock = request.Stock;
+        var isProductNameExist = await productRepository.Where(x => x.Name == request.Name && x.Id != product.Id).AnyAsync();
+        if (isProductNameExist)
+        {
+            return ServiceResult.Fail("ürün ismi veritabanında bulunmaktadır");
+        }
+
+        product = mapper.Map(request,product);
 
         productRepository.Update(product);
         await unitOfWork.SaveChangesAsync();
