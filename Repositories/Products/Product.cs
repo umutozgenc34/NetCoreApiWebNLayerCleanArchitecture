@@ -2,7 +2,7 @@
 
 namespace Repositories.Products;
 
-public class Product
+public class Product : IAuditEntity
 {
     public int Id { get; set; }
 
@@ -11,4 +11,7 @@ public class Product
     public int Stock { get; set; }
     public int CategoryId { get; set; }
     public Category Category { get; set; } = default!;
+    public DateTime Created { get; set; }
+    public DateTime? Updated { get; set; }
+
 }

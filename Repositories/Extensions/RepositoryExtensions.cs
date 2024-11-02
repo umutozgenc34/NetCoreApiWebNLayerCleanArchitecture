@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repositories.Categories;
+using Repositories.Interceptors;
 using Repositories.Products;
 
 namespace Repositories.Extensions;
@@ -21,6 +22,8 @@ public static class RepositoryExtensions
             {
             sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName);
             });
+
+            options.AddInterceptors(new AuditDbContextInterceptor());
         });
 
         services.AddScoped<IProductRepository, ProductRepository>();
